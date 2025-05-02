@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>셀카 각도 측정 웹앱</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    video { border: 1px solid #ccc; max-width: 90%; height: auto; margin-top: 10px; }
+    #angleDisplay { font-size: 1.5em; margin-top: 10px; color: darkblue; }
+    button { margin: 10px; padding: 10px 20px; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h1>셀카 각도 측정기</h1>
+  <p>스마트폰을 기울이면 각도가 실시간으로 표시돼요.</p>
+  <div id="angleDisplay">현재 각도: 0.00°</div>
+  <video id="camera" autoplay playsinline></video>
+  <br>
+  <button id="captureBtn">사진 촬영 + 각도 저장</button>
+  <a id="downloadLink" style="display:none;" download="selfie_with_angle.png">사진 다운로드</a>
+
+  <script>
+    // 📷 카메라 설정
+    const video = document.getElementById('camera');
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+      .then(stream => {
+        video.srcObject = stream;
+      });
+
+    // 📐 각도 표시
+    let currentPitch = 0.0;
+    window.addEventListener('deviceorientation', function(event) {
+      currentPitch = event.beta || 0.0; // beta: -180 to 180
+      document.getElementById('angleDisplay').innerText = `현재 각도: ${currentPitch.toFixed(2)}°`;
+    });
+
+    // 📸 사진 촬영 + 저장
+    document.getElementById('captureBtn').addEventListener('click', () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+
+      // 📎 각도 텍스트 삽입
+      ctx.fillStyle = 'red';
+      ctx.font = '24px sans-serif';
+      ctx.fillText(`Angle: ${currentPitch.toFixed(2)}°`, 20, 30);
+
+      // 다운로드 링크 생성
+      const imgData = canvas.toDataURL('image/png');
+      const link = document.getElementById('downloadLink');
+      link.href = imgData;
+      link.style.display = 'inline';
+      link.click();
+    });
+  </script>
+</body>
+</html>
