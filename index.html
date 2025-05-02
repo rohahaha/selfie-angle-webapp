@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>셀카 각도 측정 웹앱</title>
+  <title>셀카 각도 측정기 📷</title>
   <style>
     body {
       font-family: sans-serif;
@@ -52,7 +52,7 @@
   <br>
   <button id="captureBtn">📸 사진 촬영 + 각도 저장</button>
   <br>
-  <a id="downloadLink" download="selfie_with_angle.png">📥 사진 다운로드</a>
+  <a id="downloadLink">📥 사진 다운로드</a>
 
   <script>
     const video = document.getElementById('camera');
@@ -84,6 +84,7 @@
       const imgData = canvas.toDataURL('image/png');
       const link = document.getElementById('downloadLink');
       link.href = imgData;
+      link.download = `selfie_angle_${currentPitch.toFixed(2)}.png`;
       link.style.display = 'inline';
       link.click();
     });
